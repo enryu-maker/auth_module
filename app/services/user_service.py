@@ -18,6 +18,7 @@ def verify_user(loginrequest, db):
     """
     user = db.query(User).filter(
         or_(User.username == loginrequest.username, User.email == loginrequest.username)).first()
+    print(user)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if not bcrypt_context.verify(loginrequest.password, user.password):

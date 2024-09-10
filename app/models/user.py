@@ -11,6 +11,7 @@ class LoginMethod(Base):
     __tablename__ = 'LoginMethod'
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
+    image = Column(String(255))
     is_active = Column(Boolean, default=False)
 
 
@@ -30,7 +31,7 @@ class User(Base):
     is_superuser = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     login_method = Column(Integer, ForeignKey(
-        "LoginMethod.id"), nullable=False)
+        "LoginMethod.id", ondelete='CASCADE'), nullable=False)
 
 
 class LoginAttempt(Base):
@@ -39,8 +40,9 @@ class LoginAttempt(Base):
     """
     __tablename__ = 'LoginAttempt'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('User.id'))
-    login_method_id = Column(Integer, ForeignKey('LoginMethod.id'))
+    user_id = Column(Integer, ForeignKey('User.id', ondelete='CASCADE'))
+    login_method_id = Column(Integer, ForeignKey(
+        'LoginMethod.id', ondelete='CASCADE'))
     login_time = Column(DateTime, default=datetime.datetime.utcnow)
     status = Column(Boolean)
     ip_address = Column(String, nullable=True)

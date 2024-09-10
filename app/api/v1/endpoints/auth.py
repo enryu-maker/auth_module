@@ -1,10 +1,12 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from schemas.auth import LoginRequest, RegisterRequest, MethodRequest
+from schemas.auth import LoginRequest, RegisterRequest
 from db.session import SessionLocale
 from services.user_service import verify_user, check_user, hash_pass
-from models.user import User, LoginMethod, LoginAttempt
+from models.user import User, LoginAttempt
+
+
 router = APIRouter(
     prefix="/v1/auth",
     tags=["v1 auth API"],
@@ -20,25 +22,6 @@ def get_db():
 
 
 db_depandancy = Annotated[Session, Depends(get_db)]
-
-
-@router.get('/get_all')
-async def get_all(db: db_depandancy):
-    user = db.query(User).all()
-    return user
-
-
-@router.get('/get_all_attempt')
-async def get_all(db: db_depandancy):
-    user = db.query(LoginAttempt).all()
-    return user
-
-
-@router.post('/create_method')
-async def create_method(methodrequest: MethodRequest, db: db_depandancy):
-    new_method = LoginMethod(**methodrequest.model_dump())
-    db.add(new_method)
-    db.commit()
 
 
 @router.post("/register")

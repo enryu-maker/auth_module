@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, Header
+from fastapi.staticfiles import StaticFiles
+from starlette.requests import Request
 from db.session import engine, Base
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,12 +11,13 @@ from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.responses import JSONResponse
 import logging
 
-from api.v1.endpoints import auth
+from api.v1.endpoints import auth, admin
 from core.config import settings
-
 
 # Create FastAPI app instance
 app = FastAPI()
+
+app.mount("/images", StaticFiles(directory="static/images"), name="images")
 
 
 # CORS Middleware
@@ -58,13 +61,22 @@ async def validation_exception_handler(request, exc):
 Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
+app.include_router(admin.router)
+
 
 # Root endpoint
 
 
 @app.get("/")
-async def read_root():
-    return {"message": "Welcome to the FastAPI application!"}
+async def get_client_ip(request: Request):
+    x_forwarded_for = request.headers.get('X-Forwarded-For')
+    if x_forwarded_for:
+        # The first IP in the list is the client's IP
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.client.host,
+        print(request.client.port)
+    return {"client_ip": ip}
 
 # Application startup event handler
 
