@@ -1,9 +1,9 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
-from schemas.auth import LoginRequest, RegisterRequest
+from schemas.auth import LoginRequest, RegisterRequest, VerifyRequest
 from db.session import SessionLocale
-from services.user_service import verify_user, check_user, hash_pass
+from services.user_service import verify_user, check_user, hash_pass, Generate_OTP, verify_otp
 from models.user import User, LoginAttempt
 
 
@@ -26,7 +26,9 @@ db_depandancy = Annotated[Session, Depends(get_db)]
 
 @router.post("/register")
 async def register_user(registerrequest: RegisterRequest, db: db_depandancy):
+    print(register_user)
     can_create = check_user(registerrequest, db)
+    print(can_create)
     if can_create:
         new_user = User(
             username=registerrequest.username,
@@ -52,4 +54,16 @@ async def login(loginrequest: LoginRequest, db: db_depandancy,):
     if not user:
         raise HTTPException(
             status_code=401, detail="Invalid username or password")
-    return {"message": "Login Success"}
+    byte = Generate_OTP(user)
+    return Response(content=byte, media_type="image/png")
+
+
+@router.post("/verify", status_code=status.HTTP_201_CREATED)
+async def verify_login(verifyrequest: VerifyRequest, db: db_depandancy):
+    user = verify_user(verifyrequest, db)
+    is_verified = verify_otp(user, verifyrequest.otp)
+    if is_verified:
+        return {"message": "Login Success"}
+    else:
+        raise HTTPException(
+            status_code=401, detail="Invalid OTP")

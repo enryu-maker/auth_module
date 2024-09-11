@@ -4,7 +4,9 @@ from models.user import User, LoginAttempt
 from sqlalchemy import or_
 from passlib.context import CryptContext
 from fastapi import HTTPException
-
+import pyotp
+import qrcode
+import io
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
@@ -53,3 +55,18 @@ def check_user(registerrequest, db):
         raise HTTPException(
             status_code=400, detail="Username or Email already exists")
     return True
+
+
+def Generate_OTP(user):
+    qr_code = qrcode.make(
+        pyotp.totp.TOTP(user.totp_secret).provisioning_uri(
+            name=user.email, issuer_name="www.sharify.com")
+    )
+    img_byte_arr = io.BytesIO()
+    qr_code.save(img_byte_arr, format="PNG")
+    img_byte_arr = img_byte_arr.getvalue()
+    return img_byte_arr
+
+
+def verify_otp(user, otp):
+    return pyotp.TOTP(user.totp_secret).verify(otp)

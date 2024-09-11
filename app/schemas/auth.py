@@ -28,3 +28,13 @@ class LoginRequest(BaseModel):
     username: str
     password: str
     login_type: int
+
+
+class VerifyRequest(BaseModel):
+    """
+        Schema for LoginRequest
+    """
+    username: str
+    password: str
+    login_type: int
+    otp: int
