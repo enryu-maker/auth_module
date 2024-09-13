@@ -1,10 +1,10 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
-from schemas.auth import LoginRequest, RegisterRequest, VerifyRequest
-from db.session import SessionLocale
-from services.user_service import verify_user, check_user, hash_pass, Generate_OTP, verify_otp
-from models.user import User, LoginAttempt
+from app.schemas.auth import LoginRequest, RegisterRequest, VerifyRequest
+from app.db.session import SessionLocale
+from app.services.user_service import verify_user, check_user, hash_pass, Generate_OTP, verify_otp
+from app.models.user import User, LoginAttempt
 
 
 router = APIRouter(

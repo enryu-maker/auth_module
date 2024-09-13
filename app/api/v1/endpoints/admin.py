@@ -1,12 +1,12 @@
 from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException,  File, UploadFile, Form
 from sqlalchemy.orm import Session
-from models.user import LoginMethod, User, LoginAttempt
-from schemas.admin import AdminRequest
-from db.session import SessionLocale
-from services.admin_service import check_user, verify_user
-from services.user_service import hash_pass
-from models.admin import Admin
+from app.models.user import LoginMethod, User, LoginAttempt
+from app.schemas.admin import AdminRequest
+from app.db.session import SessionLocale
+from app.services.admin_service import check_user, verify_user
+from app.services.user_service import hash_pass
+from app.models.admin import Admin
 import os
 from uuid import uuid4
 

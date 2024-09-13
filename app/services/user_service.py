@@ -1,6 +1,6 @@
 
 from jose import JWTError, jwt
-from models.user import User, LoginAttempt
+from app.models.user import User, LoginAttempt
 from sqlalchemy import or_
 from passlib.context import CryptContext
 from fastapi import HTTPException

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, Header
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
-from db.session import engine, Base
+from app.db.session import engine, Base
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -11,8 +11,8 @@ from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.responses import JSONResponse
 import logging
 
-from api.v1.endpoints import auth, admin
-from core.config import settings
+from app.api.v1.endpoints import auth, admin
+from app.core.config import settings
 
 # Create FastAPI app instance
 app = FastAPI()

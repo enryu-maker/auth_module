@@ -1,7 +1,7 @@
-from db.session import Base
+from app.db.session import Base
 import datetime
 from sqlalchemy import String, Integer, Boolean, Column, ForeignKey, DateTime
-from services.totp_service import make_totp_secret
+from app.services.totp_service import make_totp_secret
 
 
 class LoginMethod(Base):

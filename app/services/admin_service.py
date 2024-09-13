@@ -1,5 +1,5 @@
 from jose import JWTError, jwt
-from models.admin import Admin
+from app.models.admin import Admin
 from sqlalchemy import or_
 from passlib.context import CryptContext
 from fastapi import HTTPException
