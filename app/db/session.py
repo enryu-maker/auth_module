@@ -5,8 +5,8 @@ from sqlalchemy.ext.declarative import declarative_base
 # from app.core.config import settings
 # import os
 # SQL_DATABASE_URL = os.environ.get('DATABASE_URI')
-
-engine = create_engine("postgresql://postgres:Akif1432@localhost/auth")
+SQL_DATABASE_URL = "postgresql://postgres:Akif1432@localhost/auth"
+engine = create_engine(SQL_DATABASE_URL)
 
 SessionLocale = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
