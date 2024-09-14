@@ -1,4 +1,4 @@
-#!/Users/kira/Desktop/auth_module/venv/bin/python3
+#!/projects/auth_module/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
