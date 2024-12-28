@@ -1,0 +1,62 @@
+import datetime
+from datetime import timedelta
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+import os
+from dotenv import load_dotenv
+from jose import jwt, JWTError
+from typing import Annotated
+from passlib.context import CryptContext
+
+load_dotenv()
+
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl='/api/user/verify-user')
+bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+
+
+def hash_pass(password: str):
+    return bcrypt_context.hash(password)
+
+
+def verify_user(loginrequest, db, Model):
+    """
+    Function for verifying user credentials
+    """
+    user = db.query(Model).filter(
+        Model.email == loginrequest.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if not bcrypt_context.verify(loginrequest.password, user.password):
+        raise HTTPException(status_code=401, detail="Invalid Password")
+    return user
+
+
+def create_accesss_token(name: str, user_id: int, expiry: timedelta):
+    encode = {
+        'sub':  name,
+        'id': user_id
+    }
+    expires = datetime.datetime.utcnow() + expiry
+    encode.update({'exp': expires})
+    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_access_token(token: Annotated[str, Depends(oauth2_bearer)]):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        name: str = payload.get('sub')
+        user_id: int = payload.get('id')
+        if name is None or user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="Invalid access token")
+        return {
+            'name': name,
+            'user_id': user_id
+        }
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid access token")

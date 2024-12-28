@@ -5,8 +5,8 @@ from app.schemas.auth import LoginRequest, RegisterRequest, VerifyRequest
 from app.db.session import SessionLocale
 from app.services.user_service import verify_user, check_user, hash_pass, Generate_OTP, verify_otp
 from app.models.user import User, LoginAttempt
-
-
+from app.services.aut_service import create_accesss_token, decode_access_token
+from datetime import timedelta
 router = APIRouter(
     prefix="/v1/auth",
     tags=["v1 auth API"],
@@ -22,6 +22,7 @@ def get_db():
 
 
 db_depandancy = Annotated[Session, Depends(get_db)]
+user_dependancy = Annotated[dict, Depends(decode_access_token)]
 
 
 @router.post("/register")
@@ -63,7 +64,25 @@ async def verify_login(verifyrequest: VerifyRequest, db: db_depandancy):
     user = verify_user(verifyrequest, db)
     is_verified = verify_otp(user, verifyrequest.otp)
     if is_verified:
-        return {"message": "Login Success"}
+        access = create_accesss_token(
+            user.name, user.id, timedelta(days=90))
+        return {
+            "message": "Login Success",
+            "access_token": access
+        }
     else:
         raise HTTPException(
             status_code=401, detail="Invalid OTP")
+
+
+@router.get("/profile/",)
+async def read_users(user: user_dependancy, db: Session = Depends(get_db)):
+    print(user)
+    db_user = db.query(User).filter(User.id == user['user_id']).first()
+    print(db_user)
+    if db_user:
+        return db_user
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="User not found"
+    )
