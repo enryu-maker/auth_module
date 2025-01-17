@@ -59,7 +59,7 @@ async def login(loginrequest: LoginRequest, db: db_depandancy,):
     return Response(content=byte, media_type="image/png")
 
 
-@router.post("/verify", status_code=status.HTTP_201_CREATED)
+@router.post("/verify/", status_code=status.HTTP_201_CREATED)
 async def verify_login(verifyrequest: VerifyRequest, db: db_depandancy):
     user = verify_user(verifyrequest, db)
     is_verified = verify_otp(user, verifyrequest.otp)

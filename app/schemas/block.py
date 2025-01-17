@@ -1,51 +1,29 @@
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel
+from typing import List, Dict
 from datetime import datetime
 
 
-class BlockBase(BaseModel):
+class ShareDataSchema(BaseModel):
     """
-    Base schema for a Block, shared fields.
+    Pydantic schema for ShareData model.
     """
-    index: int = Field(..., title="Block Index",
-                       description="The position of the block in the chain.")
-    hash: str = Field(..., max_length=255, title="Hash",
-                      description="The hash of this block.")
-    previous_hash: str = Field(..., max_length=255, title="Previous Hash",
-                               description="The hash of the previous block.")
-    signature: str = Field(..., max_length=255, title="Signature",
-                           description="The digital signature of the block.")
-    user_id: int = Field(..., title="User ID",
-                         description="The ID of the user associated with this block.")
-
-
-class BlockCreate(BlockBase):
-    """
-    Schema for creating a Block.
-    """
-    pass  # Inherits all required fields from BlockBase
-
-
-class BlockUpdate(BaseModel):
-    """
-    Schema for updating a Block, all fields optional.
-    """
-    index: Optional[int] = Field(None, title="Block Index")
-    hash: Optional[str] = Field(None, max_length=255, title="Hash")
-    previous_hash: Optional[str] = Field(
-        None, max_length=255, title="Previous Hash")
-    signature: Optional[str] = Field(None, max_length=255, title="Signature")
-    user_id: Optional[int] = Field(None, title="User ID")
-
-
-class BlockResponse(BlockBase):
-    """
-    Schema for reading a Block, including additional fields.
-    """
-    id: int = Field(..., title="Block ID",
-                    description="The unique identifier of the block.")
-    created_at: datetime = Field(..., title="Creation Timestamp",
-                                 description="The timestamp when the block was created.")
+    id: int
+    user_id: int
+    email: str
+    created_at: datetime
+    data: List[Dict]  # List of dictionaries
 
     class Config:
-        orm_mode = True  # Enable ORM mode for seamless integration with SQLAlchemy models
+        orm_mode = True  # Tells Pydantic to treat this model as an ORM model
+        schema_extra = {
+            "example": {
+                "id": 1,
+                "user_id": 101,
+                "email": "user@example.com",
+                "created_at": "2025-01-15T12:00:00",
+                "data": [
+                    {"transaction_id": "txn001", "amount": 100},
+                    {"transaction_id": "txn002", "amount": 200}
+                ]
+            }
+        }

@@ -1,31 +1,35 @@
 from app.db.session import Base
-from sqlalchemy import String, Integer, Column, ForeignKey, DateTime
+from sqlalchemy import String, Integer, Column, ForeignKey, DateTime, JSON
 from sqlalchemy.orm import relationship
 import datetime
 
 
-class Block(Base):
+class ShareData(Base):
     """
-    Model for blockchain block.
+    Model for blockchain data.
     """
-    __tablename__ = 'Block'
+    __tablename__ = 'BlockChain'
 
-    id = Column(Integer, primary_key=True)  # Unique identifier
-    index = Column(Integer, nullable=False)  # Index in the chain
-    hash = Column(String(255), nullable=False)  # Hash of this block
-    # Hash of the previous block
-    previous_hash = Column(String(255), nullable=False)
-    # Digital signature for this block
-    signature = Column(String(255), nullable=False)
+    # Unique identifier for each block
+    id = Column(Integer, primary_key=True)
 
-    # Foreign key linking the block to a user
+    # Foreign key linking to the User table
     user_id = Column(Integer, ForeignKey(
         'User.id', ondelete='CASCADE'), nullable=False)
+
+    # Email associated with the block (add any constraints as needed)
+    email = Column(String(255), nullable=False)
+    file_name = Column(String(255), nullable=False)
 
     # Timestamp of block creation
     created_at = Column(
         DateTime, default=datetime.datetime.utcnow, nullable=False)
 
-    # Optional relationship to the user model
-    # Assuming User model has blocks relationship
-    user = relationship("User", back_populates="blocks")
+    # Data field for storing a list of blockchain information
+    data = Column(JSON, nullable=False)
+
+    # Relationship with the User table
+    user = relationship("User")
+
+    def __repr__(self):
+        return f"<ShareData(id={self.id}, user_id={self.user_id}, email={self.email}, data={self.data})>"
