@@ -1,4 +1,4 @@
-#!/Users/kira/Desktop/sharify/auth_module/venv/bin/python3.13
+#!/Users/kira/auth_module/venv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys

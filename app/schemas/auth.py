@@ -19,6 +19,7 @@ class RegisterRequest(BaseModel):
     mobile_number: str
     password: str
     login_method: int
+    face_image_base64: str
 
 
 class LoginRequest(BaseModel):
@@ -38,3 +39,4 @@ class VerifyRequest(BaseModel):
     password: str
     login_type: int
     otp: int
+    face_image_base64: str

@@ -7,6 +7,11 @@ from dotenv import load_dotenv
 from jose import jwt, JWTError
 from typing import Annotated
 from passlib.context import CryptContext
+import face_recognition
+import base64
+import numpy as np
+from io import BytesIO
+from PIL import Image
 
 load_dotenv()
 
@@ -60,3 +65,17 @@ def decode_access_token(token: Annotated[str, Depends(oauth2_bearer)]):
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid access token")
+
+
+def get_face_encoding_from_base64(base64_str: str) -> bytes:
+    image_data = base64.b64decode(base64_str)
+    image = Image.open(BytesIO(image_data)).convert("RGB")
+    image_np = np.array(image)
+
+    face_encodings = face_recognition.face_encodings(image_np)
+
+    if not face_encodings:
+        raise ValueError("No face found in the image.")
+
+    # Serialize encoding
+    return face_encodings[0].tobytes()

@@ -1,6 +1,6 @@
 from app.db.session import Base
 import datetime
-from sqlalchemy import String, Integer, Boolean, Column, ForeignKey, DateTime
+from sqlalchemy import String, Integer, Boolean, Column, ForeignKey, DateTime, LargeBinary
 from app.services.totp_service import make_totp_secret
 
 
@@ -32,6 +32,7 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     login_method = Column(Integer, ForeignKey(
         "LoginMethod.id", ondelete='CASCADE'), nullable=False)
+    face_encoding = Column(LargeBinary, nullable=True)
 
 
 class LoginAttempt(Base):
